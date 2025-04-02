@@ -6,7 +6,7 @@ import traceback
 from datetime import datetime
 from functools import lru_cache
 import sys
-
+from streamlit.components.v1 import html
 # Load NLTK resources
 try:
     nltk.data.find('tokenizers/punkt')
@@ -51,35 +51,93 @@ if 'text_updated' not in st.session_state:
 
 # app.py
 st.set_page_config(
-    page_title="🔮 TextTransmuter Pro",
+    page_title="TextTransmuter Pro",
     page_icon="✨",
     layout="wide"
 )
 
+# CSS for both light/dark mode compatibility
 st.markdown("""
     <style>
-        .title { color: #4B0082; font-size: 2.8em!important; text-shadow: 2px 2px #E6E6FA; }
-        .description { font-size: 1.1em; color: #36454F; border-left: 4px solid #9370DB; padding-left: 1rem; }
-        .emoji-header { font-size: 1.8em; }
+        .title { 
+            color: #2E4053;
+            font-size: 2.8em !important;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .subtitle {
+            color: #5D6D7E;
+            font-size: 1.2em;
+            margin-bottom: 1.5rem;
+        }
+        .feature-card {
+            border: 1px solid rgba(49, 51, 63, 0.2);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .feature-header {
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        .feature-content {
+            margin-top: 1rem;
+        }
+        ul.feature-list {
+            padding-left: 1.5rem;
+        }
+        ul.feature-list li {
+            margin-bottom: 0.5rem;
+        }
+        @media (prefers-color-scheme: dark) {
+            .title { color: #D5D8DC; }
+            .subtitle { color: #AEB6BF; }
+            .feature-card { border-color: rgba(255, 255, 255, 0.1); }
+        }
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<p class="title">🔮 TextTransmuter Pro</p>', unsafe_allow_html=True)
-st.markdown("""
-    <div class="description">
-        <p class="emoji-header">🧙♂️ Transform Words into Gold ✨</p>
-        <hr style="border: 1px solid #9370DB; margin: 0.5rem 0;">
-        <p>An <strong>AI-powered linguistic forge</strong> that lets you:</p>
-        <ul>
-            <li>🔧 <strong>Precision-tune</strong> readability, sentiment & objectivity</li>
-            <li>🎭 <strong>Morph text</strong> across 15+ writing styles</li>
-            <li>⚡ <strong>Real-time metrics</strong> with iterative refinement</li>
-            <li>🎨 <strong>Style-blend</strong> capabilities (e.g., Academic+Humorous)</li>
-        </ul>
-        <p style="margin-top: 1rem;">📌 <em>Perfect for content creators, marketers, and wordsmiths seeking surgical control over textual impact</em></p>
-    </div>
-""", unsafe_allow_html=True)
+# Main title
+st.markdown('<p class="title">TextTransmuter Pro</p>', unsafe_allow_html=True)
+st.markdown('<p class="subtitle">AI-Powered Text Transformation Suite</p>', unsafe_allow_html=True)
 
+# Collapsible feature card using Streamlit's state
+if 'features_expanded' not in st.session_state:
+    st.session_state.features_expanded = False
+
+# Card header with toggle button
+col1, col2 = st.columns([0.9, 0.1])
+with col1:
+    st.markdown('<div class="feature-header">✨ Key Features</div>', unsafe_allow_html=True)
+with col2:
+    toggle_button = st.button("▼" if not st.session_state.features_expanded else "▲")
+
+if toggle_button:
+    st.session_state.features_expanded = not st.session_state.features_expanded
+    st.rerun()
+
+# Card content
+if st.session_state.features_expanded:
+    st.markdown("""
+        <div class="feature-card">
+            <div class="feature-content">
+                <p>An <strong>enterprise-grade text processing</strong> solution that enables:</p>
+                <ul class="feature-list">
+                    <li><strong>Precision Adjustment</strong> of readability, sentiment, and objectivity levels</li>
+                    <li><strong>Style Transformation</strong> across 15+ professional writing styles</li>
+                    <li><strong>Real-time Analytics</strong> with iterative refinement capabilities</li>
+                    <li><strong>Advanced Blending</strong> of multiple style parameters</li>
+                    <li><strong>Cross-platform</strong> compatibility with major LLM providers</li>
+                </ul>
+                <p style="font-style: italic; color: #5D6D7E;">Ideal for technical writers, legal professionals, and marketing teams requiring precise textual control.</p>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+else:
+    st.markdown('<div class="feature-card"></div>', unsafe_allow_html=True)
 
 
 # Cache the model fetching
